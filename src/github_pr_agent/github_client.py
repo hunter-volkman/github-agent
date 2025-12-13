@@ -178,7 +178,7 @@ class GitHubClient:
     ) -> list[PullRequestSummary]:
         """List pull requests for a repository."""
         owner, repo_name = self._parse_repo(repo)
-        
+
         # If author filter specified, use search API instead (list API doesn't support author filter)
         if author:
             return await self.search_pull_requests(
@@ -186,7 +186,7 @@ class GitHubClient:
                 repo=repo,
                 per_page=per_page,
             )
-        
+
         data = await self._get(
             f"/repos/{owner}/{repo_name}/pulls",
             params={
@@ -223,14 +223,10 @@ class GitHubClient:
         owner, repo_name = self._parse_repo(repo)
 
         # Get issue comments (general PR comments)
-        issue_comments = await self._get(
-            f"/repos/{owner}/{repo_name}/issues/{pr_number}/comments"
-        )
+        issue_comments = await self._get(f"/repos/{owner}/{repo_name}/issues/{pr_number}/comments")
 
         # Get review comments (inline code comments)
-        review_comments = await self._get(
-            f"/repos/{owner}/{repo_name}/pulls/{pr_number}/comments"
-        )
+        review_comments = await self._get(f"/repos/{owner}/{repo_name}/pulls/{pr_number}/comments")
 
         comments = []
         for c in issue_comments:
@@ -325,9 +321,7 @@ class GitHubClient:
         elif org:
             search_query += f" org:{org}"
 
-        data = await self._get(
-            "/search/issues", params={"q": search_query, "per_page": per_page}
-        )
+        data = await self._get("/search/issues", params={"q": search_query, "per_page": per_page})
 
         # Search returns slightly different format, normalize it
         results = []
@@ -341,7 +335,9 @@ class GitHubClient:
                     created_at=item["created_at"],
                     updated_at=item["updated_at"],
                     draft=item.get("draft", False),
-                    labels=[Label(name=l["name"], color=l["color"]) for l in item.get("labels", [])],
+                    labels=[
+                        Label(name=l["name"], color=l["color"]) for l in item.get("labels", [])
+                    ],
                 )
             )
         return results

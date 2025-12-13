@@ -300,15 +300,15 @@ class ToolExecutor:
         """Get a summary of repo activity for check-ins."""
         # Get open PRs
         open_prs = await self.github.list_pull_requests(repo, state="open", per_page=20)
-        
+
         # Get recently merged (closed PRs we'll filter)
         closed_prs = await self.github.list_pull_requests(repo, state="closed", per_page=10)
-        
+
         # Analyze open PRs
         needs_review = []
         has_approvals = []
         draft_prs = []
-        
+
         for pr in open_prs:
             if pr.draft:
                 draft_prs.append(pr)
@@ -316,7 +316,7 @@ class ToolExecutor:
                 # Fetch reviews for each (that's expensive)
                 # For now - categorize by basic information
                 needs_review.append(pr)
-        
+
         return {
             "summary": {
                 "total_open": len(open_prs),
@@ -334,7 +334,7 @@ class ToolExecutor:
                     "labels": [l.name for l in pr.labels],
                 }
                 # Limit for readability
-                for pr in open_prs[:10]  
+                for pr in open_prs[:10]
             ],
             "recently_closed": [
                 {
@@ -353,28 +353,34 @@ class ToolExecutor:
         pr = await self.github.get_pull_request(repo, pr_number)
         reviews = await self.github.get_pr_reviews(repo, pr_number)
         checks = await self.github.get_pr_checks(repo, pr_number)
-        
+
         # Analyze reviews
         approvals = [r for r in reviews if r.state == "APPROVED"]
         changes_requested = [r for r in reviews if r.state == "CHANGES_REQUESTED"]
         pending_reviewers = pr.requested_reviewers
-        
+
         # Determine blocking issues
         blockers = []
         if pr.draft:
             blockers.append("PR is still in draft")
         if changes_requested:
-            blockers.append(f"Changes requested by: {', '.join(r.user.login for r in changes_requested)}")
+            blockers.append(
+                f"Changes requested by: {', '.join(r.user.login for r in changes_requested)}"
+            )
         if pending_reviewers:
-            blockers.append(f"Waiting for review from: {', '.join(r.login for r in pending_reviewers)}")
+            blockers.append(
+                f"Waiting for review from: {', '.join(r.login for r in pending_reviewers)}"
+            )
         if checks.failed > 0:
-            failed_names = [c.name for c in checks.checks if c.conclusion and c.conclusion != "success"]
+            failed_names = [
+                c.name for c in checks.checks if c.conclusion and c.conclusion != "success"
+            ]
             blockers.append(f"Failed checks: {', '.join(failed_names[:3])}")
         if checks.pending > 0:
             blockers.append(f"{checks.pending} checks still running")
         if pr.mergeable is False:
             blockers.append("Has merge conflicts")
-        
+
         # Determine overall status
         if not blockers:
             status = "READY"
@@ -388,7 +394,7 @@ class ToolExecutor:
         else:
             status = "PENDING"
             message = "Waiting on reviews or checks"
-        
+
         return {
             "status": status,
             "message": message,
