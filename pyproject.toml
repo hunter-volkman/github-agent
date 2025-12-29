@@ -20,7 +20,7 @@ dev = [
 ]
 
 [project.scripts]
-pr-agent = "github_agent.cli:main"
+github-agent = "github_agent.cli:main"
 
 [tool.ruff]
 target-version = "py311"
