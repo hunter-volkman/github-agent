@@ -7,9 +7,9 @@ import json
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from github_pr_agent.github_client import GitHubClient, PullRequestSummary, User
-from github_pr_agent.tools import ToolExecutor, TOOL_SCHEMAS
-from github_pr_agent.agent import GitHubPRAgent
+from github_agent.github_client import GitHubClient, PullRequestSummary, User
+from github_agent.tools import ToolExecutor, TOOL_SCHEMAS
+from github_agent.agent import GitHubPRAgent
 
 
 # ============================================================================

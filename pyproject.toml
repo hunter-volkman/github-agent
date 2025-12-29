@@ -1,5 +1,5 @@
 [project]
-name = "github-pr-agent"
+name = "github-agent"
 version = "0.1.0"
 description = "Agent that answers questions about GitHub PRs using Claude"
 readme = "README.md"
@@ -20,7 +20,7 @@ dev = [
 ]
 
 [project.scripts]
-pr-agent = "github_pr_agent.cli:main"
+pr-agent = "github_agent.cli:main"
 
 [tool.ruff]
 target-version = "py311"
