@@ -1,4 +1,4 @@
-"""CLI for the GitHub PR Agent."""
+"""CLI for the GitHub Agent."""
 
 import asyncio
 import sys
@@ -9,7 +9,7 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.theme import Theme
 
-from .agent import GitHubPRAgent
+from .agent import GitHubAgent
 from .config import get_settings
 from .github_client import GitHubClient
 
@@ -31,8 +31,8 @@ def print_welcome():
     """Print welcome message."""
     console.print(
         Panel(
-            "[bold]GitHub PR Agent[/bold]\n\n"
-            "Ask questions about pull requests in natural language.\n"
+            "[bold]GitHub Agent[/bold]\n\n"
+            "Ask questions about things in GitHub.\n"
             "Examples:\n"
             '  • "List open PRs"\n'
             '  • "What\'s the status of PR #123?"\n'
@@ -60,7 +60,7 @@ def print_response(response: str):
     console.print()
 
 
-async def run_interactive(agent: GitHubPRAgent):
+async def run_interactive(agent: GitHubAgent):
     """Run interactive chat loop."""
     print_welcome()
 
@@ -96,7 +96,7 @@ async def run_interactive(agent: GitHubPRAgent):
             console.print(f"[error]Error: {e}[/error]")
 
 
-async def run_single_query(agent: GitHubPRAgent, query: str):
+async def run_single_query(agent: GitHubAgent, query: str):
     """Run a single query and print result."""
     result = await agent.run(query)
     print_tool_calls(result.tool_calls)
@@ -119,10 +119,9 @@ async def async_main():
     anthropic_client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
     async with GitHubClient(settings.github_token) as github_client:
-        agent = GitHubPRAgent(
+        agent = GitHubAgent(
             anthropic_client=anthropic_client,
             github_client=github_client,
-            default_repo=settings.default_repo,
             model=settings.claude_model,
             max_iterations=settings.max_tool_iterations,
         )

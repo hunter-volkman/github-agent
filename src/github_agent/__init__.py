@@ -1,7 +1,7 @@
-"""Agent that answers questions about GitHub pull requests."""
+"""GitHub Agent."""
 
-from .agent import GitHubPRAgent
+from .agent import GitHubAgent
 from .github_client import GitHubClient
 
-__all__ = ["GitHubPRAgent", "GitHubClient"]
-__version__ = "0.1.0"
+__all__ = ["GitHubAgent", "GitHubClient"]
+__version__ = "0.2.0"
